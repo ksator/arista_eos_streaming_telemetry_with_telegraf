@@ -70,7 +70,7 @@ telegraf            1.14.3              6fdd3e021713        2 weeks ago         
 influxdb            1.8.0               1bf862b66ac1        3 weeks ago         304MB
 ```
 
-# Create a docker nertwork 
+# Create a docker network 
 
 ```
 docker network create tig
