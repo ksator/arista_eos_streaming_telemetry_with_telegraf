@@ -77,7 +77,6 @@ docker network create tig
 ```
 ```
 docker network ls
-docker network inspect tig
 ```
 
 # Create containers 
@@ -90,7 +89,96 @@ docker run -d --name grafana -p 3000:3000 --network=tig grafana/grafana:7.0.3
 ```
 ```
 docker ps
+CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                            NAMES
+77311aa74c6a        telegraf:1.14.3         "/entrypoint.sh tele…"   6 seconds ago       Up 5 seconds        8092/udp, 8125/udp, 8094/tcp                     telegraf_eos
+fd7e83343d23        telegraf:1.14.3         "/entrypoint.sh tele…"   17 seconds ago      Up 16 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf_openconfig
+34df9c8620bd        influxdb:1.8.0          "/entrypoint.sh infl…"   22 seconds ago      Up 21 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
+c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                3 hours ago         Up 3 hours          0.0.0.0:3000->3000/tcp                           grafana
+```
+```
 docker network inspect tig
+[
+    {
+        "Name": "tig",
+        "Id": "8c56cd4a208c8f64556963f725af786dd3f3c14ac458db503c82574307d51c0b",
+        "Created": "2020-06-01T20:31:43.5383398Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "34df9c8620bdbf3fd8245ff2d6d885a3d512dd630ae1ff1815c4fe2977a32058": {
+                "Name": "influxdb",
+                "EndpointID": "b80859b8e91a26f0530577ba37270699915b90948fe2316bbb4c73430d33c4a1",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            },
+            "77311aa74c6a60eb36297c990beef9503aa2972e83d653ecb2dac719816e2d7c": {
+                "Name": "telegraf_eos",
+                "EndpointID": "4f9e474a15d8e02d94e4a849413990f366f08f988011bec3bd98d8e0316a8b49",
+                "MacAddress": "02:42:ac:12:00:05",
+                "IPv4Address": "172.18.0.5/16",
+                "IPv6Address": ""
+            },
+            "c818fb9ce85fdb91fdbac91a2135b20d50bbba93ddc1fca453c85d81677f31f6": {
+                "Name": "grafana",
+                "EndpointID": "a471c77ee0afc1e953206f3eefe6996f1a23b82d930a3b36a99e1fe07b0d59b0",
+                "MacAddress": "02:42:ac:12:00:04",
+                "IPv4Address": "172.18.0.4/16",
+                "IPv6Address": ""
+            },
+            "fd7e83343d23cbfda57b4fedaaff23a89c80618f21e89d08e72752c6c106c81c": {
+                "Name": "telegraf_openconfig",
+                "EndpointID": "38b8b1956d269a26596d3d4c7d017975c9857a4d2996d7572118613c13396d02",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
+```
+# Telegraf logs
+```
+docker logs telegraf_eos
+2020-06-09T23:11:41Z I! Starting Telegraf 1.14.3
+2020-06-09T23:11:41Z I! Using config file: /etc/telegraf/telegraf.conf
+2020-06-09T23:11:41Z I! Loaded inputs: cisco_telemetry_gnmi
+2020-06-09T23:11:41Z I! Loaded aggregators: 
+2020-06-09T23:11:41Z I! Loaded processors: 
+2020-06-09T23:11:41Z I! Loaded outputs: influxdb
+2020-06-09T23:11:41Z I! Tags enabled: host=77311aa74c6a
+2020-06-09T23:11:41Z I! [agent] Config: Interval:10s, Quiet:false, Hostname:"77311aa74c6a", Flush Interval:10s
+```
+```
+docker logs telegraf_openconfig
+2020-06-09T23:11:30Z I! Starting Telegraf 1.14.3
+2020-06-09T23:11:30Z I! Using config file: /etc/telegraf/telegraf.conf
+2020-06-09T23:11:30Z I! Loaded inputs: cisco_telemetry_gnmi
+2020-06-09T23:11:30Z I! Loaded aggregators: 
+2020-06-09T23:11:30Z I! Loaded processors: 
+2020-06-09T23:11:30Z I! Loaded outputs: influxdb
+2020-06-09T23:11:30Z I! Tags enabled: host=fd7e83343d23
+2020-06-09T23:11:30Z I! [agent] Config: Interval:10s, Quiet:false, Hostname:"fd7e83343d23", Flush Interval:10s
 ```
 
 
