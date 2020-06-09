@@ -4,8 +4,8 @@ This repository shows the steps to demo streaming telemetry with Arista EOS devi
 
 The building blocks are: 
   - EOS devices: There is a gNMI server in EOS devices.    
-  - Telegraf: A gNMI client sends a `subscribe` RPC to request to targets (network devices with a gNMI server) to stream values for paths
-  - Influxdb: Telegraf writes the data to Influxdb.   
+  - Telegraf. It has a gNMI client. It subscribes to paths on targets (network devices with a gNMI server)
+  - Influxdb: Telegraf writes on Influxdb the data streamed from network devices.    
 
 # Requirements on EOS devices 
 
@@ -30,20 +30,10 @@ Note: To subscribe to both openconfig and native paths, the gNMI client must sen
 
 # Telegraf configuration files 
 
-To subscribe to both openconfig and native paths, the gNMI client must send 2 differents requests.  
-
 We will use Telegraf.  
 
-We will use two telegraf configuration files: 
-  - [telegraf_openconfig.conf](telegraf_openconfig.conf)
-  - [telegraf_eos.conf](telegraf_eos.conf) 
-
-The configuration file [telegraf_openconfig.conf](telegraf_openconfig.conf) uses:
-- a gNMI input plugin configured to subscribe to openconfig paths 
-- the influxdb output plugin   
-  
-The configuration file [telegraf_eos.conf](telegraf_eos.conf) uses: 
-- a gNMI input plugin configured to subscribe to EOS native paths 
+We will use the configuration file [telegraf.conf](telegraf.conf). It uses: 
+- a gNMI input plugin configured to subscribe to openconfig and native paths 
 - the influxdb output plugin   
 
 So the devices will stream openconfig and EOS native data to Telegraf and Telegraf will store the data to Influxdb.  
@@ -83,17 +73,15 @@ docker network ls
 
 ```
 docker run -d --name influxdb -p 8083:8083 -p 8086:8086 --network=tig influxdb:1.8.0
-docker run -d --name telegraf_openconfig -v $PWD/telegraf_openconfig.conf:/etc/telegraf/telegraf.conf:ro --network=tig telegraf:1.14.3
-docker run -d --name telegraf_eos -v $PWD/telegraf_eos.conf:/etc/telegraf/telegraf.conf:ro --network=tig telegraf:1.14.3
+docker run -d --name telegraf -v $PWD/telegraf.conf:/etc/telegraf/telegraf.conf:ro --network=tig telegraf:1.14.3
 docker run -d --name grafana -p 3000:3000 --network=tig grafana/grafana:7.0.3
 ```
 ```
 docker ps
 CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                            NAMES
-77311aa74c6a        telegraf:1.14.3         "/entrypoint.sh tele…"   6 seconds ago       Up 5 seconds        8092/udp, 8125/udp, 8094/tcp                     telegraf_eos
-fd7e83343d23        telegraf:1.14.3         "/entrypoint.sh tele…"   17 seconds ago      Up 16 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf_openconfig
-34df9c8620bd        influxdb:1.8.0          "/entrypoint.sh infl…"   22 seconds ago      Up 21 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
-c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                3 hours ago         Up 3 hours          0.0.0.0:3000->3000/tcp                           grafana
+bfe273b6b299        telegraf:1.14.3         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
+c3ead2edcf5a        influxdb:1.8.0          "/entrypoint.sh infl…"   20 seconds ago      Up 18 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
+c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago         Up 4 hours          0.0.0.0:3000->3000/tcp                           grafana
 ```
 ```
 docker network inspect tig
@@ -123,18 +111,18 @@ docker network inspect tig
         },
         "ConfigOnly": false,
         "Containers": {
-            "34df9c8620bdbf3fd8245ff2d6d885a3d512dd630ae1ff1815c4fe2977a32058": {
-                "Name": "influxdb",
-                "EndpointID": "b80859b8e91a26f0530577ba37270699915b90948fe2316bbb4c73430d33c4a1",
-                "MacAddress": "02:42:ac:12:00:02",
-                "IPv4Address": "172.18.0.2/16",
+            "bfe273b6b2992021b911f442acca4980ce19b46e6bc0865dcba354cf8fcf0121": {
+                "Name": "telegraf",
+                "EndpointID": "f6dfac8660c257b437a2b5b218ee67142961c7fc087f11b664c982052b4cee98",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
                 "IPv6Address": ""
             },
-            "77311aa74c6a60eb36297c990beef9503aa2972e83d653ecb2dac719816e2d7c": {
-                "Name": "telegraf_eos",
-                "EndpointID": "4f9e474a15d8e02d94e4a849413990f366f08f988011bec3bd98d8e0316a8b49",
-                "MacAddress": "02:42:ac:12:00:05",
-                "IPv4Address": "172.18.0.5/16",
+            "c3ead2edcf5a52303f66cf38fc9a24dd80f8b50e6819357bde4541798a825308": {
+                "Name": "influxdb",
+                "EndpointID": "6e5bf29fba94b2db65af929c2682317b6538292250ca04097697f8659f52ab40",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
                 "IPv6Address": ""
             },
             "c818fb9ce85fdb91fdbac91a2135b20d50bbba93ddc1fca453c85d81677f31f6": {
@@ -143,44 +131,373 @@ docker network inspect tig
                 "MacAddress": "02:42:ac:12:00:04",
                 "IPv4Address": "172.18.0.4/16",
                 "IPv6Address": ""
-            },
-            "fd7e83343d23cbfda57b4fedaaff23a89c80618f21e89d08e72752c6c106c81c": {
-                "Name": "telegraf_openconfig",
-                "EndpointID": "38b8b1956d269a26596d3d4c7d017975c9857a4d2996d7572118613c13396d02",
-                "MacAddress": "02:42:ac:12:00:03",
-                "IPv4Address": "172.18.0.3/16",
-                "IPv6Address": ""
             }
         },
         "Options": {},
         "Labels": {}
     }
 ]
+
 ```
 # Telegraf logs
+
 ```
-docker logs telegraf_eos
-2020-06-09T23:11:41Z I! Starting Telegraf 1.14.3
-2020-06-09T23:11:41Z I! Using config file: /etc/telegraf/telegraf.conf
-2020-06-09T23:11:41Z I! Loaded inputs: cisco_telemetry_gnmi
-2020-06-09T23:11:41Z I! Loaded aggregators: 
-2020-06-09T23:11:41Z I! Loaded processors: 
-2020-06-09T23:11:41Z I! Loaded outputs: influxdb
-2020-06-09T23:11:41Z I! Tags enabled: host=77311aa74c6a
-2020-06-09T23:11:41Z I! [agent] Config: Interval:10s, Quiet:false, Hostname:"77311aa74c6a", Flush Interval:10s
-```
-```
-docker logs telegraf_openconfig
-2020-06-09T23:11:30Z I! Starting Telegraf 1.14.3
-2020-06-09T23:11:30Z I! Using config file: /etc/telegraf/telegraf.conf
-2020-06-09T23:11:30Z I! Loaded inputs: cisco_telemetry_gnmi
-2020-06-09T23:11:30Z I! Loaded aggregators: 
-2020-06-09T23:11:30Z I! Loaded processors: 
-2020-06-09T23:11:30Z I! Loaded outputs: influxdb
-2020-06-09T23:11:30Z I! Tags enabled: host=fd7e83343d23
-2020-06-09T23:11:30Z I! [agent] Config: Interval:10s, Quiet:false, Hostname:"fd7e83343d23", Flush Interval:10s
+docker logs telegraf
+2020-06-09T23:46:34Z I! Starting Telegraf 1.14.3
+2020-06-09T23:46:34Z I! Using config file: /etc/telegraf/telegraf.conf
+2020-06-09T23:46:34Z I! Loaded inputs: cisco_telemetry_gnmi cisco_telemetry_gnmi
+2020-06-09T23:46:34Z I! Loaded aggregators: 
+2020-06-09T23:46:34Z I! Loaded processors: 
+2020-06-09T23:46:34Z I! Loaded outputs: influxdb
+2020-06-09T23:46:34Z I! Tags enabled: host=bfe273b6b299
+2020-06-09T23:46:34Z I! [agent] Config: Interval:10s, Quiet:false, Hostname:"bfe273b6b299", Flush Interval:10s
 ```
 
+# Query influxdb 
 
+```
+docker exec -it influxdb bash
 
+root@c3ead2edcf5a:/# influx
+Connected to http://localhost:8086 version 1.8.0
+InfluxDB shell version: 1.8.0
+```
+```
+> SHOW DATABASES
+name: databases
+name
+----
+arista
+_internal
+> USE arista
+Using database arista
+```
+```
+> SHOW MEASUREMENTS
+name: measurements
+name
+----
+eos_bgp
+ifcounters
+openconfig_bgp
+> 
+```
+```
+> SHOW TAG KEYS FROM "ifcounters"
+name: ifcounters
+tagKey
+------
+host
+name
+source
+```
+```
+> SHOW TAG VALUES FROM "ifcounters" with KEY = "name"
+name: ifcounters
+key  value
+---  -----
+name Ethernet1
+name Ethernet10
+name Ethernet11
+name Ethernet12
+name Ethernet13
+name Ethernet14
+name Ethernet15
+name Ethernet16
+name Ethernet17
+name Ethernet18
+name Ethernet19
+name Ethernet2
+name Ethernet20
+name Ethernet21
+name Ethernet22
+name Ethernet23
+name Ethernet24
+name Ethernet25
+name Ethernet26
+name Ethernet27
+name Ethernet28
+name Ethernet29
+name Ethernet3
+name Ethernet30
+name Ethernet31
+name Ethernet32
+name Ethernet33
+name Ethernet34
+name Ethernet35
+name Ethernet36
+name Ethernet37
+name Ethernet38
+name Ethernet39
+name Ethernet4
+name Ethernet40
+name Ethernet41
+name Ethernet42
+name Ethernet43
+name Ethernet44
+name Ethernet45
+name Ethernet46
+name Ethernet47
+name Ethernet48
+name Ethernet49/1
+name Ethernet49/2
+name Ethernet49/3
+name Ethernet49/4
+name Ethernet5
+name Ethernet50/1
+name Ethernet50/2
+name Ethernet50/3
+name Ethernet50/4
+name Ethernet51/1
+name Ethernet51/2
+name Ethernet51/3
+name Ethernet51/4
+name Ethernet52/1
+name Ethernet52/2
+name Ethernet52/3
+name Ethernet52/4
+name Ethernet6
+name Ethernet7
+name Ethernet8
+name Ethernet9
+name Management1
+```
+```
+> SHOW TAG VALUES FROM "ifcounters" with KEY = "source"
+name: ifcounters
+key    value
+---    -----
+source 10.83.28.122
+source 10.83.28.125
+```
+```
+> SHOW SERIES FROM "ifcounters"
+key
+---
+ifcounters,host=bfe273b6b299,name=Ethernet1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet1,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet10,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet10,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet11,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet11,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet12,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet12,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet13,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet13,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet14,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet14,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet15,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet15,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet16,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet16,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet17,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet17,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet18,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet18,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet19,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet19,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet2,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet20,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet20,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet21,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet21,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet22,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet22,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet23,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet23,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet24,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet24,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet25,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet25,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet26,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet26,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet27,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet27,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet28,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet28,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet29,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet29,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet3,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet30,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet30,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet31,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet31,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet32,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet32,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet33,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet33,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet34,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet34,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet35,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet35,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet36,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet36,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet37,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet37,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet38,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet38,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet39,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet39,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet4,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet40,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet40,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet41,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet41,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet42,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet42,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet43,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet43,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet44,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet44,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet45,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet45,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet46,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet46,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet47,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet47,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet48,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet48,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet49/1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet49/1,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet49/2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet49/2,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet49/3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet49/3,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet49/4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet49/4,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet5,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet5,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet50/1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet50/1,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet50/2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet50/2,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet50/3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet50/3,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet50/4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet50/4,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet51/1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet51/1,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet51/2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet51/2,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet51/3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet51/3,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet51/4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet51/4,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet52/1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet52/1,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet52/2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet52/2,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet52/3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet52/3,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet52/4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet52/4,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet6,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet6,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet7,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet7,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet8,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet8,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Ethernet9,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet9,source=10.83.28.125
+ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.125
+```
+```
+> SHOW SERIES FROM "ifcounters" WHERE "source" = '10.83.28.122'
+key
+---
+ifcounters,host=bfe273b6b299,name=Ethernet1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet10,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet11,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet12,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet13,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet14,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet15,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet16,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet17,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet18,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet19,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet20,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet21,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet22,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet23,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet24,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet25,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet26,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet27,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet28,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet29,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet30,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet31,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet32,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet33,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet34,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet35,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet36,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet37,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet38,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet39,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet40,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet41,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet42,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet43,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet44,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet45,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet46,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet47,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet48,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet49/1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet49/2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet49/3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet49/4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet5,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet50/1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet50/2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet50/3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet50/4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet51/1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet51/2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet51/3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet51/4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet52/1,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet52/2,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet52/3,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet52/4,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet6,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet7,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet8,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Ethernet9,source=10.83.28.122
+ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.122
+```
+```
+> SHOW SERIES EXACT CARDINALITY ON arista
+name: eos_bgp
+count
+-----
+24
+
+name: ifcounters
+count
+-----
+130
+
+name: openconfig_bgp
+count
+-----
+22
+```
+```
+> SHOW SERIES EXACT CARDINALITY ON arista FROM "ifcounters" WHERE "source" = '10.83.28.122'
+name: ifcounters
+count
+-----
+65
+> 
+```
 
