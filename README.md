@@ -780,6 +780,39 @@ time                in_octets out_octets name
 </p>
 </details>
 
+
+```
+> SELECT "in_octets","out_octets" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" =~/Ethernet(4|24)/ AND time >= now() - 60s) GROUP BY "name"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: ifcounters
+tags: name=Ethernet24
+time                in_octets out_octets
+----                --------- ----------
+1591790545292521967 802032    
+1591790545292549315           755185
+1591790575312599502           755411
+1591790575312625709 802258    
+1591790589325834427 802417    
+1591790589325846584           755570
+
+name: ifcounters
+tags: name=Ethernet4
+time                in_octets out_octets
+----                --------- ----------
+1591790545247869333 32704805  
+1591790547249414877           32611377
+1591790575273111579 32705188  
+1591790577274579004           32611690
+> 
+```
+</p>
+</details>
+
+
 ```
 > SELECT mean("in_octets") FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" = 'Ethernet24' AND time >= now() - 60s) 
 ```
