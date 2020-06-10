@@ -18,6 +18,7 @@
 # About this repository  
 
 This repository shows the steps to demo streaming telemetry with Arista EOS devices and Telegraf.  
+It covers openconfig telemetry and native telemetry.  
 
 # building blocks 
 
