@@ -4,14 +4,14 @@
 
 [About this repository](#about-this-repository)   
 [Demo building blocks](#demo-building-blocks)   
-[Requirements on EOS devices](#requirements-on-eos-devices)   
-[Telegraf configuration file](#telegraf-configuration-file)   
-[Install docker](#install-docker)   
-[Pull the docker images](#pull-the-docker-images)   
-[Create a docker network](#create-a-docker-network)   
-[Create containers](#create-containers)   
-[Display detailed information about the network](#display-detailed-information-about-the-network) 
-[Telegraf logs](#telegraf-logs)   
+[Configure Arista devices](#configure-arista-devices)   
+[Configure Telegraf](#configure-telegraf)   
+[Install Docker](#install-docker)   
+[Pull the Docker images](#pull-the-docker-images)   
+[Create a Docker network](#create-a-docker-network)   
+[Create Docker containers](#create-docker-containers)   
+[Display detailed information about the network](#display-detailed-information-about-the-network)  
+[Verify Telegraf logs](#verify-telegraf-logs)   
 [Query influxDB using CLI](#query-influxdb-using-cli)   
 [Query InfluxDB using Python](#query-influxdb-using-python)   
 
@@ -28,7 +28,7 @@ It covers both OpenConfig telemetry and native telemetry.
 
 So the devices will stream OpenConfig and EOS native data to Telegraf. Telegraf will store the data to InfluxDB. Then we will query InfluxBD.  
 
-# Requirements on EOS devices 
+# Configure Arista devices 
 
 Enable and allow gNMI:
 
@@ -47,25 +47,26 @@ management api gnmi
 `provider eos-native` is required to serve gNMI subscription requests to EOS native paths.  
 So, using the above configuration, a gNMI client can subscribes to both OpenConfig and native paths.  
 
-Note: To subscribe to both OpenConfig and native paths, the gNMI client must send 2 differents requests.  
-
-# Telegraf configuration file
+# Configure Telegraf
 
 We will use the Telegraf configuration file [telegraf.conf](telegraf.conf). 
 It uses: 
  - a gNMI input plugin configured to subscribe to OpenConfig and native paths 
  - the influxdb output plugin   
 
-So the devices will stream OpenConfig and EOS native data to Telegraf and Telegraf will store the data to Influxdb.  
+So the devices will stream OpenConfig and EOS native data to Telegraf. And Telegraf will store the data to Influxdb.  
 
-# Install docker
+Note: To subscribe to both OpenConfig and native paths, the gNMI client must send 2 differents subscription requests.  
+So, in this demo, the gNMI input plugin is configured with 2 differents subscription requests: one to subscribe to a set of OpenConfig paths and another one to subscribe to a set of native paths.  
+
+# Install Docker
 
 ```
 docker -v
 Docker version 19.03.8, build afacb8b
 ```
 
-# Pull the docker images
+# Pull the Docker images
 
 ```
 docker pull telegraf:1.14.3
@@ -89,7 +90,7 @@ influxdb            1.8.0               1bf862b66ac1        3 weeks ago         
 </details>
 
 
-# Create a docker network 
+# Create a Docker network 
 
 ```
 docker network create tig
@@ -98,7 +99,7 @@ docker network create tig
 docker network ls
 ```
 
-# Create containers 
+# Create Docker containers 
 
 ```
 docker run -d --name influxdb -p 8083:8083 -p 8086:8086 --network=tig influxdb:1.8.0
@@ -185,7 +186,7 @@ docker network inspect tig
 </p>
 </details>
 
-# Telegraf logs
+# Verify Telegraf logs
 
 ```
 docker logs telegraf
@@ -208,13 +209,21 @@ docker logs telegraf
 
 # Query influxDB using CLI
 
+## Start an interactive session
+
 ```
 docker exec -it influxdb bash
+```
 
+```
 root@c3ead2edcf5a:/# influx
 Connected to http://localhost:8086 version 1.8.0
 InfluxDB shell version: 1.8.0
+> 
 ```
+
+## List databases 
+
 ```
 > SHOW DATABASES
 ```
@@ -231,10 +240,15 @@ _internal
 </p>
 </details>
 
+## Select a database 
+
 ```
 > USE arista
 Using database arista
 ```
+
+## List measurements 
+
 ```
 > SHOW MEASUREMENTS
 ```
@@ -253,121 +267,7 @@ openconfig_bgp
 </p>
 </details>
 
-Query ifcounters measurement 
-
-```
-> SHOW TAG KEYS FROM "ifcounters"
-```
-<details><summary>click me to see the response</summary>
-<p>
-
-```
-
-name: ifcounters
-tagKey
-------
-host
-name
-source
-```
-</p>
-</details>
-
-```
-> SHOW TAG VALUES FROM "ifcounters" with KEY = "name"
-```
-<details><summary>click me to see the response</summary>
-<p>
-
-```
-name: ifcounters
-key  value
----  -----
-name Ethernet1
-name Ethernet10
-name Ethernet11
-name Ethernet12
-name Ethernet13
-name Ethernet14
-name Ethernet15
-name Ethernet16
-name Ethernet17
-name Ethernet18
-name Ethernet19
-name Ethernet2
-name Ethernet20
-name Ethernet21
-name Ethernet22
-name Ethernet23
-name Ethernet24
-name Ethernet25
-name Ethernet26
-name Ethernet27
-name Ethernet28
-name Ethernet29
-name Ethernet3
-name Ethernet30
-name Ethernet31
-name Ethernet32
-name Ethernet33
-name Ethernet34
-name Ethernet35
-name Ethernet36
-name Ethernet37
-name Ethernet38
-name Ethernet39
-name Ethernet4
-name Ethernet40
-name Ethernet41
-name Ethernet42
-name Ethernet43
-name Ethernet44
-name Ethernet45
-name Ethernet46
-name Ethernet47
-name Ethernet48
-name Ethernet49/1
-name Ethernet49/2
-name Ethernet49/3
-name Ethernet49/4
-name Ethernet5
-name Ethernet50/1
-name Ethernet50/2
-name Ethernet50/3
-name Ethernet50/4
-name Ethernet51/1
-name Ethernet51/2
-name Ethernet51/3
-name Ethernet51/4
-name Ethernet52/1
-name Ethernet52/2
-name Ethernet52/3
-name Ethernet52/4
-name Ethernet6
-name Ethernet7
-name Ethernet8
-name Ethernet9
-name Management1
-```
-</p>
-</details>
-
-```
-> SHOW TAG VALUES FROM "ifcounters" with KEY = "source"
-```
-<details><summary>click me to see the response</summary>
-<p>
-
-```
-
-name: ifcounters
-key    value
----    -----
-source 10.83.28.122
-source 10.83.28.125
-```
-</p>
-</details>
+## List series 
 
 ```
 > SHOW SERIES FROM "ifcounters"
@@ -590,6 +490,7 @@ ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.122
 </p>
 </details>
 
+## Cardinality 
 ```
 > SHOW SERIES EXACT CARDINALITY ON arista
 ```
@@ -630,6 +531,128 @@ count
 ```
 </p>
 </details>
+
+## ifcounters measurement 
+
+### Returns the list of keys 
+
+```
+> SHOW TAG KEYS FROM "ifcounters"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+
+name: ifcounters
+tagKey
+------
+host
+name
+source
+```
+</p>
+</details>
+
+### Returns the list of values for a specified key 
+
+```
+> SHOW TAG VALUES FROM "ifcounters" with KEY = "name"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: ifcounters
+key  value
+---  -----
+name Ethernet1
+name Ethernet10
+name Ethernet11
+name Ethernet12
+name Ethernet13
+name Ethernet14
+name Ethernet15
+name Ethernet16
+name Ethernet17
+name Ethernet18
+name Ethernet19
+name Ethernet2
+name Ethernet20
+name Ethernet21
+name Ethernet22
+name Ethernet23
+name Ethernet24
+name Ethernet25
+name Ethernet26
+name Ethernet27
+name Ethernet28
+name Ethernet29
+name Ethernet3
+name Ethernet30
+name Ethernet31
+name Ethernet32
+name Ethernet33
+name Ethernet34
+name Ethernet35
+name Ethernet36
+name Ethernet37
+name Ethernet38
+name Ethernet39
+name Ethernet4
+name Ethernet40
+name Ethernet41
+name Ethernet42
+name Ethernet43
+name Ethernet44
+name Ethernet45
+name Ethernet46
+name Ethernet47
+name Ethernet48
+name Ethernet49/1
+name Ethernet49/2
+name Ethernet49/3
+name Ethernet49/4
+name Ethernet5
+name Ethernet50/1
+name Ethernet50/2
+name Ethernet50/3
+name Ethernet50/4
+name Ethernet51/1
+name Ethernet51/2
+name Ethernet51/3
+name Ethernet51/4
+name Ethernet52/1
+name Ethernet52/2
+name Ethernet52/3
+name Ethernet52/4
+name Ethernet6
+name Ethernet7
+name Ethernet8
+name Ethernet9
+name Management1
+```
+</p>
+</details>
+
+```
+> SHOW TAG VALUES FROM "ifcounters" with KEY = "source"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+
+name: ifcounters
+key    value
+---    -----
+source 10.83.28.122
+source 10.83.28.125
+```
+</p>
+</details>
+
+### Select fields 
 
 ```
 > SELECT * FROM "ifcounters" WHERE "source" = '10.83.28.122'  ORDER BY DESC LIMIT 3
@@ -833,12 +856,12 @@ time                derivative
 </p>
 </details>
 
-
-Query openconfig_bgp measurement 
+## openconfig_bgp measurement 
 
 
 # Query InfluxDB using Python
 
+## Requirements 
 ```
 python -V
 Python 3.7.7
@@ -850,6 +873,8 @@ pip install influxdb
 pip freeze | grep influxdb
 influxdb==5.3.0
 ```
+
+## Python interactive session
 ```
 python
 Python 3.7.7 (default, Mar 10 2020, 15:43:33) 
