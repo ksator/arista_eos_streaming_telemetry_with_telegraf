@@ -1,6 +1,6 @@
 ![GitHub](https://img.shields.io/github/license/ksator/arista_eos_streaming_telemetry_with_telegraf)    
 
-# Tables of content. 
+# Tables of content 
 
 [About this repository](#about-this-repository)   
 [Demo building blocks](#demo-building-blocks)   
