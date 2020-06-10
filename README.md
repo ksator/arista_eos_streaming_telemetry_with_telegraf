@@ -755,7 +755,7 @@ time                in_octets out_octets name
 </details>
 
 ```
-> SELECT "in_octets","out_octets","name" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" =~/Ethernet(1|24)/ AND time >= now() - 60s) 
+> SELECT "in_octets","out_octets","name" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" =~/Ethernet(4|24)/ AND time >= now() - 60s) 
 ```
 <details><summary>click me to see the response</summary>
 <p>
@@ -764,13 +764,18 @@ time                in_octets out_octets name
 name: ifcounters
 time                in_octets out_octets name
 ----                --------- ---------- ----
-1591747435787448088 363999               Ethernet24
-1591747435787483071           353342     Ethernet24
-1591747449794133096 364158               Ethernet24
-1591747449794171514           353431     Ethernet24
-1591747465803270196           353657     Ethernet24
-1591747465803323139 364384               Ethernet24
-> 
+1591788625820821765 32685381             Ethernet4
+1591788625860898158           735633     Ethernet24
+1591788625860925056 782620               Ethernet24
+1591788627821727530           32594193   Ethernet4
+1591788651837941988           32594282   Ethernet4
+1591788651838002768 32685540             Ethernet4
+1591788655839354826 32685764             Ethernet4
+1591788655882529037 782846               Ethernet24
+1591788655882554316           735859     Ethernet24
+1591788657840907669           32594506   Ethernet4
+1591788669890213294           736018     Ethernet24
+1591788669890274993 783005               Ethernet24
 ```
 </p>
 </details>
