@@ -181,18 +181,30 @@ InfluxDB shell version: 1.8.0
 ```
 ```
 > SHOW DATABASES
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: databases
 name
 ----
 arista
 _internal
 ```
+</p>
+</details>
 ```
 > USE arista
 Using database arista
 ```
 ```
 > SHOW MEASUREMENTS
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: measurements
 name
 ----
@@ -201,10 +213,19 @@ ifcounters
 openconfig_bgp
 > 
 ```
+</p>
+</details>
+
 Query ifcounters measurement 
 
 ```
 > SHOW TAG KEYS FROM "ifcounters"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+
 name: ifcounters
 tagKey
 ------
@@ -212,6 +233,9 @@ host
 name
 source
 ```
+</p>
+</details>
+
 ```
 > SHOW TAG VALUES FROM "ifcounters" with KEY = "name"
 ```
@@ -293,12 +317,21 @@ name Management1
 
 ```
 > SHOW TAG VALUES FROM "ifcounters" with KEY = "source"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+
 name: ifcounters
 key    value
 ---    -----
 source 10.83.28.122
 source 10.83.28.125
 ```
+</p>
+</details>
+
 ```
 > SHOW SERIES FROM "ifcounters"
 ```
@@ -547,12 +580,20 @@ count
 
 ```
 > SHOW SERIES EXACT CARDINALITY ON arista FROM "ifcounters" WHERE "source" = '10.83.28.122'
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 count
 -----
 65
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT * FROM "ifcounters" WHERE "source" = '10.83.28.122'  ORDER BY DESC LIMIT 3
 ```
@@ -573,6 +614,11 @@ time                host         in_broadcast_pkts in_discards in_errors in_mult
 
 ```
 > SELECT "in_octets","out_octets", "name" FROM "ifcounters" WHERE "source" = '10.83.28.122' ORDER BY DESC LIMIT 3
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                in_octets out_octets name
 ----                --------- ---------- ----
@@ -581,8 +627,16 @@ time                in_octets out_octets name
 1591747257622763374           32223976   Ethernet4
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT "in_octets","out_octets" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name"='Ethernet24') ORDER BY DESC LIMIT 3
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                in_octets out_octets
 ----                --------- ----------
@@ -591,6 +645,9 @@ time                in_octets out_octets
 1591747269675996035 362325    
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT "in_octets","out_octets" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name"='Ethernet24' AND time >= now() - 60s) 
 ```
@@ -659,20 +716,36 @@ time                in_octets out_octets name
 
 ```
 > SELECT mean("in_octets") FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" = 'Ethernet24' AND time >= now() - 60s) 
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                mean
 ----                ----
 1591747439566953700 364384
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT mean("in_octets")*8 FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" = 'Ethernet24' AND time >= now() - 60s) 
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                mean
 ----                ----
 1591747477741147700 2918330.6666666665
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT derivative(mean("in_octets"), 1s) *8 FROM "ifcounters" WHERE ("name" = 'Ethernet24') AND ("source" = '10.83.28.122') AND (time >= now() - 10m)  GROUP BY time(1m) 
 ```
