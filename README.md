@@ -817,7 +817,7 @@ time                derivative
 Query openconfig_bgp measurement 
 
 
-# Query Influxdn using Python
+# Query Influxdb using Python
 
 ```
 python -V
