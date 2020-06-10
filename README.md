@@ -90,6 +90,7 @@ docker ps
 ```
 <details><summary>click me to see the response</summary>
 <p>
+  
 ```
 CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                            NAMES
 bfe273b6b299        telegraf:1.14.3         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
