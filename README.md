@@ -594,6 +594,11 @@ time                mean
 ```
 ```
 > SELECT derivative(mean("in_octets"), 1s) *8 FROM "ifcounters" WHERE ("name" = 'Ethernet24') AND ("source" = '10.83.28.122') AND (time >= now() - 10m)  GROUP BY time(1m) 
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                derivative
 ----                ----------
@@ -609,8 +614,16 @@ time                derivative
 1591747500000000000 81.46666666666667
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT derivative(mean("in_unicast_pkts"), 1s) FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" = 'Ethernet4') AND (time >= now() - 10m)  GROUP BY time(1m) 
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                derivative
 ----                ----------
@@ -626,11 +639,9 @@ time                derivative
 1591747500000000000 0.03333333333333333
 > 
 ```
+</p>
+</details>
+
+
 Query openconfig_bgp measurement 
-```
-```
-```
-```
-```
-```
-```
+
