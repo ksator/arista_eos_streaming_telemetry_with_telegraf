@@ -18,6 +18,7 @@
 [Verify Telegraf logs](#verify-telegraf-logs)   
 [Query influxDB using CLI](#query-influxdb-using-cli)   
 [Query InfluxDB using Python](#query-influxdb-using-python)   
+[Use Grafana](#use-grafana)  
 
 # About this repository  
 
