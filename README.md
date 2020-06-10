@@ -3,10 +3,15 @@
 # Tables of content 
 
 [About this repository](#about-this-repository)   
+[About Telegraf](#about-telegraf)  
+[About InfluxDB](#about-influxdb)  
+[About Grafana](#about-grafana)  
+[About a TIG stack](#about-a-TIG-stack)  
 [Demo building blocks](#demo-building-blocks)   
 [Configure Arista devices](#configure-arista-devices)   
 [Configure Telegraf](#configure-telegraf)   
 [Install Docker](#install-docker)   
+[Install Docker-compose](#install-docker-compose)     
 [Pull the Docker images](#pull-the-docker-images)   
 [Create a Docker network](#create-a-docker-network)   
 [Create Docker containers](#create-docker-containers)   
@@ -37,12 +42,12 @@ It supports InfluxDB and other backends.
 It runs as a web application.  
 It is written in GO.  
 
-# About a TIG stack 
+# About a TIG stack 
 
 A TIG stack uses:
-    - Telegraf to collect data and to write the collected data in InfluxDB
-    - InfluxDB to store the data collected
-    - Grafana to visualize the data stored in InfluxDB
+    - Telegraf to collect data and to write the collected data in InfluxDB. 
+    - InfluxDB to store the data collected. 
+    - Grafana to visualize the data stored in InfluxDB. 
 
 # Demo building blocks 
 
@@ -90,7 +95,16 @@ docker -v
 Docker version 19.03.8, build afacb8b
 ```
 
+# Install Docker-compose
+
+```
+docker-compose -v
+docker-compose version 1.25.5, build 8a1c60f6
+```
+
 # Pull the Docker images
+
+This is optionnal as they will be pulled automatically if necessary.  
 
 ```
 docker pull telegraf:1.14.3
@@ -116,6 +130,8 @@ influxdb            1.8.0               1bf862b66ac1        3 weeks ago         
 
 # Create a Docker network 
 
+This is not required if you use docker-compose.  
+
 ```
 docker network create tig
 ```
@@ -125,6 +141,7 @@ docker network ls
 
 # Create Docker containers 
 
+Run these commands if you are not using docker-compose: 
 ```
 docker run -d --name influxdb -p 8083:8083 -p 8086:8086 --network=tig influxdb:1.8.0
 docker run -d --name telegraf -v $PWD/telegraf.conf:/etc/telegraf/telegraf.conf:ro --network=tig telegraf:1.14.3
@@ -141,6 +158,27 @@ CONTAINER ID        IMAGE                   COMMAND                  CREATED    
 bfe273b6b299        telegraf:1.14.3         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
 c3ead2edcf5a        influxdb:1.8.0          "/entrypoint.sh infl…"   20 seconds ago      Up 18 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
 c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago         Up 4 hours          0.0.0.0:3000->3000/tcp                           grafana
+```
+</p>
+</details>
+
+Or, instead of running the above Docker commands, use docker-compose: 
+
+```
+docker-compose -f docker-compose.yml up -d
+```
+```
+docker-compose ps
+```
+<details><summary>click me to see the response</summary>
+<p>
+  
+```
+  Name             Command           State              Ports            
+-------------------------------------------------------------------------
+grafana    /run.sh                   Up      0.0.0.0:3000->3000/tcp      
+influxdb   /entrypoint.sh influxd    Up      8083/tcp, 8086/tcp          
+telegraf   /entrypoint.sh telegraf   Up      8092/udp, 8094/tcp, 8125/udp
 ```
 </p>
 </details>
