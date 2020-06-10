@@ -7,12 +7,12 @@
 [About InfluxDB](#about-influxdb)  
 [About Grafana](#about-grafana)  
 [About a TIG stack](#about-a-TIG-stack)  
-[Workflow to build the TIG stack](#workflow-to-build-the-tig-stack)   
 [Demo building blocks](#demo-building-blocks)   
 [Configure Arista devices](#configure-arista-devices)   
 [Configure Telegraf](#configure-telegraf)   
 [Install Docker](#install-docker)       
 [Pull the Docker images](#pull-the-docker-images)   
+[Workflow to build the TIG stack](#workflow-to-build-the-tig-stack)   
 [Docker workflow](#docker-workflow)   
 [Docker-compose workflow](#docker-compose-workflow)  
 [Verify Telegraf logs](#verify-telegraf-logs)   
@@ -45,9 +45,9 @@ It is written in GO.
 # About a TIG stack 
 
 A TIG stack uses:
-    - Telegraf to collect data and to write the collected data in InfluxDB. 
-    - InfluxDB to store the data collected. 
-    - Grafana to visualize the data stored in InfluxDB. 
+- Telegraf to collect data and to write the collected data in InfluxDB. 
+- InfluxDB to store the data collected. 
+- Grafana to visualize the data stored in InfluxDB. 
 
 # Demo building blocks 
 
@@ -56,12 +56,6 @@ A TIG stack uses:
   - InfluxDB: Telegraf writes on InfluxDB the data streamed from network devices.    
 
 So the devices will stream OpenConfig and EOS native data to Telegraf. Telegraf will store the data to InfluxDB. Then we will query InfluxDB.  
-
-# Workflow to build the TIG stack
-
-We can use of one these differents workflows to build the TIG stack:
-- Docker-compose workflow
-- Docker workflow
 
 # Configure Arista devices 
 
@@ -126,13 +120,13 @@ influxdb            1.8.0               1bf862b66ac1        3 weeks ago         
 </p>
 </details>
 
-# Docker workflow
+# Workflow to build the TIG stack
 
 We can use of one these differents workflows to build the TIG stack:
 - Docker-compose workflow
 - Docker workflow
 
-This section covers the Docker workflow. 
+# Docker workflow
 
 ## Create a Docker network 
 
@@ -233,12 +227,6 @@ docker network inspect tig
 </details>
 
 # Docker-compose workflow
-
-We can use of one these differents workflows to build the TIG stack:
-- Docker-compose workflow
-- Docker workflow
-
-This section covers the Docker-compose workflow. 
 
 ## Install Docker-compose
 
