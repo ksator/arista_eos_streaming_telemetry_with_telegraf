@@ -500,4 +500,62 @@ count
 65
 > 
 ```
-
+```
+> SELECT * FROM "ifcounters" WHERE "source" = '10.83.28.122'  ORDER BY DESC LIMIT 3
+name: ifcounters
+time                host         in_broadcast_pkts in_discards in_errors in_multicast_pkts in_octets in_unicast_pkts name        out_broadcast_pkts out_discards out_errors out_multicast_pkts out_octets out_unicast_pkts source
+----                ----         ----------------- ----------- --------- ----------------- --------- --------------- ----        ------------------ ------------ ---------- ------------------ ---------- ---------------- ------
+1591747175792506596 bfe273b6b299                                                           286938640                 Management1                                                                                           10.83.28.122
+1591747175792493464 bfe273b6b299 243616                                                                              Management1                                                                                           10.83.28.122
+1591747175792483320 bfe273b6b299                                                                                     Management1                                                                          5768915          10.83.28.122
+> 
+```
+```
+> SELECT "in_octets","out_octets", "name" FROM "ifcounters" WHERE "source" = '10.83.28.122' ORDER BY DESC LIMIT 3
+name: ifcounters
+time                in_octets out_octets name
+----                --------- ---------- ----
+1591747265864892858           6146169517 Management1
+1591747265864883043 289180556            Management1
+1591747257622763374           32223976   Ethernet4
+> 
+```
+```
+> SELECT "in_octets","out_octets" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name"='Ethernet24') ORDER BY DESC LIMIT 3
+name: ifcounters
+time                in_octets out_octets
+----                --------- ----------
+1591747285684621082 362551    
+1591747285684577516           352034
+1591747269675996035 362325    
+> 
+```
+```
+> SELECT "in_octets","out_octets" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name"='Ethernet24' AND time >= now() - 60s) 
+name: ifcounters
+time                in_octets out_octets
+----                --------- ----------
+1591747315702875678           352260
+1591747315702934394 362777    
+1591747329711620129           352349
+1591747329711708507 362936    
+1591747345721372958 363162    
+1591747345721389797           352575
+> 
+```
+```
+> SELECT "in_octets","out_octets","name" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" =~/Ethernet.*/ AND time >= now() - 60s) 
+name: ifcounters
+time                in_octets out_octets name
+----                --------- ---------- ----
+1591747315673205906           32224513   Ethernet4
+1591747315702875678           352260     Ethernet24
+1591747315702934394 362777               Ethernet24
+1591747329711620129           352349     Ethernet24
+1591747329711708507 362936               Ethernet24
+1591747343692188058 32267765             Ethernet4
+1591747345693238453           32224737   Ethernet4
+1591747345721372958 363162               Ethernet24
+1591747345721389797           352575     Ethernet24
+> 
+```
