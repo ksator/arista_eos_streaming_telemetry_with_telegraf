@@ -20,6 +20,30 @@
 This repository shows the steps to demo streaming telemetry with Arista EOS devices and Telegraf.  
 It covers both OpenConfig telemetry and native telemetry.  
 
+# About Telegraf 
+
+Telegraf is an open source collector written in GO.  
+Telegraf collects data and writes them into a database.  
+It is plugin-driven (it has input plugins, output plugins, ...)  
+
+# About InfluxDB
+
+InfluxDB is an open source time series database written in GO.
+
+# About Grafana
+
+Grafana is an open source tool used to visualize time series data.  
+It supports InfluxDB and other backends.  
+It runs as a web application.  
+It is written in GO.  
+
+# About a TIG stack 
+
+A TIG stack uses:
+    - Telegraf to collect data and to write the collected data in InfluxDB
+    - InfluxDB to store the data collected
+    - Grafana to visualize the data stored in InfluxDB
+
 # Demo building blocks 
 
   - EOS devices: There is a gNMI server in EOS devices.    
