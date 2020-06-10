@@ -85,8 +85,14 @@ c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago
 ```
 
 # Display detailed information on the network 
+
 ```
 docker network inspect tig
+```
+<details><summary>click me to see the output</summary>
+<p>
+
+```
 [
     {
         "Name": "tig",
@@ -139,12 +145,19 @@ docker network inspect tig
         "Labels": {}
     }
 ]
-
 ```
+</p>
+</details>
+
 # Telegraf logs
 
 ```
 docker logs telegraf
+```
+<details><summary>click me to see the output</summary>
+<p>
+
+```
 2020-06-09T23:46:34Z I! Starting Telegraf 1.14.3
 2020-06-09T23:46:34Z I! Using config file: /etc/telegraf/telegraf.conf
 2020-06-09T23:46:34Z I! Loaded inputs: cisco_telemetry_gnmi cisco_telemetry_gnmi
@@ -154,6 +167,8 @@ docker logs telegraf
 2020-06-09T23:46:34Z I! Tags enabled: host=bfe273b6b299
 2020-06-09T23:46:34Z I! [agent] Config: Interval:10s, Quiet:false, Hostname:"bfe273b6b299", Flush Interval:10s
 ```
+</p>
+</details>
 
 # Query influxdb 
 
@@ -171,6 +186,8 @@ name
 ----
 arista
 _internal
+```
+```
 > USE arista
 Using database arista
 ```
@@ -197,6 +214,11 @@ source
 ```
 ```
 > SHOW TAG VALUES FROM "ifcounters" with KEY = "name"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 key  value
 ---  -----
@@ -266,6 +288,9 @@ name Ethernet8
 name Ethernet9
 name Management1
 ```
+</p>
+</details>
+
 ```
 > SHOW TAG VALUES FROM "ifcounters" with KEY = "source"
 name: ifcounters
@@ -276,6 +301,11 @@ source 10.83.28.125
 ```
 ```
 > SHOW SERIES FROM "ifcounters"
+```
+<details><summary>click me to see the output</summary>
+<p>
+
+```
 key
 ---
 ifcounters,host=bfe273b6b299,name=Ethernet1,source=10.83.28.122
@@ -409,6 +439,9 @@ ifcounters,host=bfe273b6b299,name=Ethernet9,source=10.83.28.125
 ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.122
 ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.125
 ```
+</p>
+</details>
+
 ```
 > SHOW SERIES FROM "ifcounters" WHERE "source" = '10.83.28.122'
 key
@@ -549,6 +582,11 @@ time                in_octets out_octets
 ```
 ```
 > SELECT "in_octets","out_octets","name" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" =~/Ethernet.*/ AND time >= now() - 60s) 
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                in_octets out_octets name
 ----                --------- ---------- ----
@@ -563,8 +601,16 @@ time                in_octets out_octets name
 1591747345721389797           352575     Ethernet24
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT "in_octets","out_octets","name" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" =~/Ethernet(1|24)/ AND time >= now() - 60s) 
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                in_octets out_octets name
 ----                --------- ---------- ----
@@ -576,6 +622,9 @@ time                in_octets out_octets name
 1591747465803323139 364384               Ethernet24
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT mean("in_octets") FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" = 'Ethernet24' AND time >= now() - 60s) 
 name: ifcounters
