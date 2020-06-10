@@ -816,3 +816,43 @@ time                derivative
 
 Query openconfig_bgp measurement 
 
+
+# Query Influxdn using Python
+
+```
+python -V
+Python 3.7.7
+```
+```
+pip install influxdb
+```
+```
+pip freeze | grep influxdb
+influxdb==5.3.0
+```
+```
+python
+Python 3.7.7 (default, Mar 10 2020, 15:43:33) 
+[Clang 11.0.0 (clang-1100.0.33.17)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> 
+>>> from influxdb import InfluxDBClient
+>>> 
+>>> influx_client = InfluxDBClient('localhost',8086)
+>>> 
+>>> influx_client.query('show databases')
+ResultSet({'('databases', None)': [{'name': 'arista'}, {'name': '_internal'}]})
+>>> 
+>>> influx_client.query('show measurements', database='arista')
+ResultSet({'('measurements', None)': [{'name': 'eos_bgp'}, {'name': 'ifcounters'}, {'name': 'openconfig_bgp'}]})
+>>> 
+>>> points = influx_client.query("""SELECT "in_octets" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name"='Ethernet24') ORDER BY DESC LIMIT 3""", database='arista').get_points()
+>>> for point in points:
+...     print(point['in_octets'])
+... 
+397378
+397152
+396993
+>>> 
+>>> exit()
+```
