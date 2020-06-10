@@ -52,13 +52,22 @@ docker pull telegraf:1.14.3
 docker pull influxdb:1.8.0
 docker pull grafana/grafana:7.0.3
 ```
+
 ```
 docker images
+```
+<details><summary>click me to see the response</summary>
+<p>
+  
+```
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 grafana/grafana     7.0.3               22fccd4fab0a        6 days ago          158MB
 telegraf            1.14.3              6fdd3e021713        2 weeks ago         251MB
 influxdb            1.8.0               1bf862b66ac1        3 weeks ago         304MB
 ```
+</p>
+</details>
+
 
 # Create a docker network 
 
@@ -78,11 +87,17 @@ docker run -d --name grafana -p 3000:3000 --network=tig grafana/grafana:7.0.3
 ```
 ```
 docker ps
+```
+<details><summary>click me to see the response</summary>
+<p>
+```
 CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                            NAMES
 bfe273b6b299        telegraf:1.14.3         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
 c3ead2edcf5a        influxdb:1.8.0          "/entrypoint.sh infl…"   20 seconds ago      Up 18 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
 c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago         Up 4 hours          0.0.0.0:3000->3000/tcp                           grafana
 ```
+</p>
+</details>
 
 # Display detailed information on the network 
 
@@ -194,6 +209,7 @@ _internal
 ```
 </p>
 </details>
+
 ```
 > USE arista
 Using database arista
