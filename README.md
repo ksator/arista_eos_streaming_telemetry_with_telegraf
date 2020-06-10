@@ -1,3 +1,18 @@
+# Tables of content. 
+
+[About this repository](#about-this-repository)   
+[building blocks](#building-blocks)   
+[Requirements on EOS devices](#requirements-on-eos-devices)   
+[Telegraf configuration file](#telegraf-configuration-file)   
+[Install docker](#install-docker)   
+[Pull the docker images](#pull-the-docker-images)   
+[Create a docker network](#create-a-docker-network)   
+[Create containers](#create-containers)   
+[Display detailed information about the network](#display-detailed-information-about-the-network) 
+[Telegraf logs](#telegraf-logs)   
+[Query influxdb using CLI](#query-influxdb-using-cli)   
+[Query Influxdb using Python](#query-Influxdb-using-python)   
+
 # About this repository  
 
 This repository shows the steps to demo streaming telemetry with Arista EOS devices and Telegraf.  
@@ -29,7 +44,7 @@ So, using the above configuration, a gNMI client can subscribes to both openconf
 
 Note: To subscribe to both openconfig and native paths, the gNMI client must send 2 differents requests.  
 
-# Telegraf configuration files 
+# Telegraf configuration file
 
 We will use the Telegraf configuration file [telegraf.conf](telegraf.conf). 
 It uses: 
@@ -186,7 +201,7 @@ docker logs telegraf
 </p>
 </details>
 
-# Query influxdb 
+# Query influxdb using CLI
 
 ```
 docker exec -it influxdb bash
