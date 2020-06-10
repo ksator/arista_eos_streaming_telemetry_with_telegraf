@@ -1,9 +1,9 @@
-![GitHub](https://img.shields.io/github/license/ksator/arista_eos_streaming_telemetry_with_Telegraf)    
+![GitHub](https://img.shields.io/github/license/ksator/arista_eos_streaming_telemetry_with_telegraf)    
 
 # Tables of content. 
 
 [About this repository](#about-this-repository)   
-[building blocks](#building-blocks)   
+[Demo building blocks](#demo-building-blocks)   
 [Requirements on EOS devices](#requirements-on-eos-devices)   
 [Telegraf configuration file](#telegraf-configuration-file)   
 [Install docker](#install-docker)   
@@ -12,19 +12,21 @@
 [Create containers](#create-containers)   
 [Display detailed information about the network](#display-detailed-information-about-the-network) 
 [Telegraf logs](#telegraf-logs)   
-[Query influxdb using CLI](#query-influxdb-using-cli)   
-[Query Influxdb using Python](#query-Influxdb-using-python)   
+[Query influxDB using CLI](#query-influxdb-using-cli)   
+[Query InfluxDB using Python](#query-influxdb-using-python)   
 
 # About this repository  
 
 This repository shows the steps to demo streaming telemetry with Arista EOS devices and Telegraf.  
-It covers openconfig telemetry and native telemetry.  
+It covers both OpenConfig telemetry and native telemetry.  
 
-# building blocks 
+# Demo building blocks 
 
   - EOS devices: There is a gNMI server in EOS devices.    
-  - Telegraf: It has a gNMI client. It subscribes to paths on targets (network devices with a gNMI server)
-  - Influxdb: Telegraf writes on Influxdb the data streamed from network devices.    
+  - Telegraf: It has a gNMI client. It subscribes to paths (OpenConfig and native) on targets (Arista EOS devices).
+  - InfluxDB: Telegraf writes on InfluxDB the data streamed from network devices.    
+
+So the devices will stream OpenConfig and EOS native data to Telegraf. Telegraf will store the data to InfluxDB. Then we will query InfluxBD.  
 
 # Requirements on EOS devices 
 
@@ -43,18 +45,18 @@ management api gnmi
 ```
 
 `provider eos-native` is required to serve gNMI subscription requests to EOS native paths.  
-So, using the above configuration, a gNMI client can subscribes to both openconfig and native paths.  
+So, using the above configuration, a gNMI client can subscribes to both OpenConfig and native paths.  
 
-Note: To subscribe to both openconfig and native paths, the gNMI client must send 2 differents requests.  
+Note: To subscribe to both OpenConfig and native paths, the gNMI client must send 2 differents requests.  
 
 # Telegraf configuration file
 
 We will use the Telegraf configuration file [telegraf.conf](telegraf.conf). 
 It uses: 
- - a gNMI input plugin configured to subscribe to openconfig and native paths 
+ - a gNMI input plugin configured to subscribe to OpenConfig and native paths 
  - the influxdb output plugin   
 
-So the devices will stream openconfig and EOS native data to Telegraf and Telegraf will store the data to Influxdb.  
+So the devices will stream OpenConfig and EOS native data to Telegraf and Telegraf will store the data to Influxdb.  
 
 # Install docker
 
@@ -204,7 +206,7 @@ docker logs telegraf
 </p>
 </details>
 
-# Query influxdb using CLI
+# Query influxDB using CLI
 
 ```
 docker exec -it influxdb bash
@@ -835,7 +837,7 @@ time                derivative
 Query openconfig_bgp measurement 
 
 
-# Query Influxdb using Python
+# Query InfluxDB using Python
 
 ```
 python -V
