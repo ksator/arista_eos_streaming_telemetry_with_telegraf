@@ -100,7 +100,7 @@ c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago
 </p>
 </details>
 
-# Display detailed information on the network 
+# Display detailed information about the network 
 
 ```
 docker network inspect tig
