@@ -532,6 +532,153 @@ count
 </p>
 </details>
 
+
+## openconfig_bgp measurement 
+
+### Returns the list of keys 
+
+```
+> SHOW TAG KEYS FROM "openconfig_bgp"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+tagKey
+------
+/network-instances/network-instance/protocols/protocol/name
+afi_safi_name
+host
+identifier
+name
+neighbor_address
+source
+> 
+```
+</p>
+</details>
+
+### Returns the list of values for a specified key 
+
+```
+> SHOW TAG VALUES FROM "openconfig_bgp" WITH KEY = "source"
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+key    value
+---    -----
+source 10.83.28.122
+source 10.83.28.125
+> 
+```
+</p>
+</details>
+
+```
+> SHOW TAG VALUES FROM "openconfig_bgp" WITH KEY = "neighbor_address" WHERE "source"='10.83.28.122' 
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+key              value
+---              -----
+neighbor_address 10.10.10.2
+neighbor_address 10.10.10.4
+> 
+```
+</p>
+</details>
+
+### Select fields 
+```
+> SELECT "neighbors/neighbor/state/neighbor_address" FROM "openconfig_bgp" WHERE source='10.83.28.122' ORDER BY DESC LIMIT 10
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+time                neighbors/neighbor/state/neighbor_address
+----                -----------------------------------------
+1591729949067129716 10.10.10.4
+1591729949066405709 10.10.10.2
+> 
+```
+</p>
+</details>
+
+```
+> SELECT "neighbors/neighbor/state/session_state" FROM "openconfig_bgp" WHERE ("source" = '10.83.28.122'  AND "neighbor_address" = '10.10.10.4') ORDER BY DESC LIMIT 1
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+time                neighbors/neighbor/state/session_state
+----                --------------------------------------
+1591729949082769237 ESTABLISHED
+> 
+```
+</p>
+</details>
+
+```
+> SELECT LAST("neighbors/neighbor/state/session_state") FROM "openconfig_bgp" WHERE (source='10.83.28.122' AND "neighbor_address" = '10.10.10.4')
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+time                last
+----                ----
+1591729949082769237 ESTABLISHED
+> 
+```
+</p>
+</details>
+
+```
+> SELECT "source",  "neighbor_address", LAST("neighbors/neighbor/state/session_state") FROM "openconfig_bgp" WHERE (source='10.83.28.122' AND "neighbor_address" = '10.10.10.4')
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+time                source       neighbor_address last
+----                ------       ---------------- ----
+1591729949082769237 10.83.28.122 10.10.10.4       ESTABLISHED
+> 
+```
+</p>
+</details>
+
+```
+> SELECT "source", "neighbors/neighbor/state/neighbor_address", "neighbors/neighbor/config/peer_as", "neighbors/neighbor/config/enabled" FROM "openconfig_bgp" WHERE (source='10.83.28.122' AND "neighbor_address" = '10.10.10.4') ORDER BY DESC LIMIT 10
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+time                source       neighbors/neighbor/state/neighbor_address neighbors/neighbor/config/peer_as neighbors/neighbor/config/enabled
+----                ------       ----------------------------------------- --------------------------------- ---------------------------------
+1591729949079717195 10.83.28.122                                           65002                             
+1591729949067129716 10.83.28.122 10.10.10.4                                                                  
+1591729949066544119 10.83.28.122                                                                             true
+> 
+```
+</p>
+</details>
+
 ## ifcounters measurement 
 
 ### Returns the list of keys 
@@ -855,9 +1002,6 @@ time                derivative
 ```
 </p>
 </details>
-
-## openconfig_bgp measurement 
-
 
 # Query InfluxDB using Python
 
