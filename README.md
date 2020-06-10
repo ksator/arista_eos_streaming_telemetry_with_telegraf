@@ -559,3 +559,73 @@ time                in_octets out_octets name
 1591747345721389797           352575     Ethernet24
 > 
 ```
+```
+> SELECT "in_octets","out_octets","name" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" =~/Ethernet(1|24)/ AND time >= now() - 60s) 
+name: ifcounters
+time                in_octets out_octets name
+----                --------- ---------- ----
+1591747435787448088 363999               Ethernet24
+1591747435787483071           353342     Ethernet24
+1591747449794133096 364158               Ethernet24
+1591747449794171514           353431     Ethernet24
+1591747465803270196           353657     Ethernet24
+1591747465803323139 364384               Ethernet24
+> 
+```
+```
+> SELECT mean("in_octets") FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" = 'Ethernet24' AND time >= now() - 60s) 
+name: ifcounters
+time                mean
+----                ----
+1591747439566953700 364384
+> 
+```
+```
+> SELECT mean("in_octets")*8 FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" = 'Ethernet24' AND time >= now() - 60s) 
+name: ifcounters
+time                mean
+----                ----
+1591747477741147700 2918330.6666666665
+> 
+```
+```
+> SELECT derivative(mean("in_octets"), 1s) *8 FROM "ifcounters" WHERE ("name" = 'Ethernet24') AND ("source" = '10.83.28.122') AND (time >= now() - 10m)  GROUP BY time(1m) 
+name: ifcounters
+time                derivative
+----                ----------
+1591746960000000000 81.46666666666667
+1591747020000000000 81.46666666666667
+1591747080000000000 81.46666666666667
+1591747140000000000 81.46666666666667
+1591747200000000000 81.46666666666667
+1591747260000000000 81.46666666666667
+1591747320000000000 81.46666666666667
+1591747380000000000 81.46666666666667
+1591747440000000000 81.46666666666667
+1591747500000000000 81.46666666666667
+> 
+```
+```
+> SELECT derivative(mean("in_unicast_pkts"), 1s) FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" = 'Ethernet4') AND (time >= now() - 10m)  GROUP BY time(1m) 
+name: ifcounters
+time                derivative
+----                ----------
+1591746960000000000 0.03333333333333333
+1591747020000000000 0.03333333333333333
+1591747080000000000 0.03333333333333333
+1591747140000000000 0.03333333333333333
+1591747200000000000 0.03333333333333333
+1591747260000000000 0.03333333333333333
+1591747320000000000 0.03333333333333333
+1591747380000000000 0.03333333333333333
+1591747440000000000 0.03333333333333333
+1591747500000000000 0.03333333333333333
+> 
+```
+```
+```
+```
+```
+```
+```
+```
