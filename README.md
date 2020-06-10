@@ -977,6 +977,33 @@ time                neighbors/neighbor/state/neighbor_address
 </details>
 
 ```
+
+> SELECT "neighbors/neighbor/state/neighbor_address" FROM "openconfig_bgp" GROUP BY "source" ORDER BY DESC LIMIT 10
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+tags: source=10.83.28.125
+time                neighbors/neighbor/state/neighbor_address
+----                -----------------------------------------
+1591741922312763875 10.10.10.1
+1591741922312042982 10.10.10.3
+
+name: openconfig_bgp
+tags: source=10.83.28.122
+time                neighbors/neighbor/state/neighbor_address
+----                -----------------------------------------
+1591729949067129716 10.10.10.4
+1591729949066405709 10.10.10.2
+> 
+```
+</p>
+</details>
+
+
+```
 > SELECT "neighbors/neighbor/state/session_state" FROM "openconfig_bgp" WHERE ("source" = '10.83.28.122'  AND "neighbor_address" = '10.10.10.4') ORDER BY DESC LIMIT 1
 ```
 <details><summary>click me to see the response</summary>
@@ -1037,6 +1064,49 @@ time                source       neighbors/neighbor/state/neighbor_address neigh
 1591729949079717195 10.83.28.122                                           65002                             
 1591729949067129716 10.83.28.122 10.10.10.4                                                                  
 1591729949066544119 10.83.28.122                                                                             true
+> 
+```
+</p>
+</details>
+
+```
+> SELECT "source", "neighbors/neighbor/state/neighbor_address" AS "neighbor_address", "neighbors/neighbor/config/peer_as" AS "peer-as", "neighbors/neighbor/config/enabled" AS "peer_enabled" FROM "openconfig_bgp" GROUP BY "source", "neighbor_address" ORDER BY DESC LIMIT 10
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
+name: openconfig_bgp
+tags: neighbor_address=10.10.10.4, source=10.83.28.122
+time                source       neighbor_address peer-as peer_enabled
+----                ------       ---------------- ------- ------------
+1591729949079717195 10.83.28.122                  65002   
+1591729949067129716 10.83.28.122 10.10.10.4               
+1591729949066544119 10.83.28.122                          true
+
+name: openconfig_bgp
+tags: neighbor_address=10.10.10.3, source=10.83.28.125
+time                source       neighbor_address peer-as peer_enabled
+----                ------       ---------------- ------- ------------
+1591741922328551528 10.83.28.125                  65003   
+1591741922312042982 10.83.28.125 10.10.10.3               
+1591741922311446372 10.83.28.125                          true
+
+name: openconfig_bgp
+tags: neighbor_address=10.10.10.2, source=10.83.28.122
+time                source       neighbor_address peer-as peer_enabled
+----                ------       ---------------- ------- ------------
+1591729949073383435 10.83.28.122                  65001   
+1591729949066405709 10.83.28.122 10.10.10.2               
+1591729949065837695 10.83.28.122                          true
+
+name: openconfig_bgp
+tags: neighbor_address=10.10.10.1, source=10.83.28.125
+time                source       neighbor_address peer-as peer_enabled
+----                ------       ---------------- ------- ------------
+1591741922318698586 10.83.28.125                  65002   
+1591741922312763875 10.83.28.125 10.10.10.1               
+1591741922312187113 10.83.28.125                          true
 > 
 ```
 </p>
