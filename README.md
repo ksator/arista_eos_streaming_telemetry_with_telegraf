@@ -490,7 +490,7 @@ ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.122
 </p>
 </details>
 
-## Cardinality 
+## Count series 
 ```
 > SHOW SERIES EXACT CARDINALITY ON arista
 ```
@@ -533,7 +533,7 @@ count
 </details>
 
 
-## openconfig_bgp measurement 
+## Query openconfig_bgp measurement 
 
 ### Returns the list of keys 
 
@@ -679,7 +679,7 @@ time                source       neighbors/neighbor/state/neighbor_address neigh
 </p>
 </details>
 
-## ifcounters measurement 
+## Query ifcounters measurement 
 
 ### Returns the list of keys 
 
