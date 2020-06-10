@@ -2,9 +2,10 @@
 
 This repository shows the steps to demo streaming telemetry with Arista EOS devices and Telegraf.  
 
-The building blocks are: 
+# building blocks 
+
   - EOS devices: There is a gNMI server in EOS devices.    
-  - Telegraf. It has a gNMI client. It subscribes to paths on targets (network devices with a gNMI server)
+  - Telegraf: It has a gNMI client. It subscribes to paths on targets (network devices with a gNMI server)
   - Influxdb: Telegraf writes on Influxdb the data streamed from network devices.    
 
 # Requirements on EOS devices 
@@ -30,11 +31,10 @@ Note: To subscribe to both openconfig and native paths, the gNMI client must sen
 
 # Telegraf configuration files 
 
-We will use Telegraf.  
-
-We will use the configuration file [telegraf.conf](telegraf.conf). It uses: 
-- a gNMI input plugin configured to subscribe to openconfig and native paths 
-- the influxdb output plugin   
+We will use the Telegraf configuration file [telegraf.conf](telegraf.conf). 
+It uses: 
+ - a gNMI input plugin configured to subscribe to openconfig and native paths 
+ - the influxdb output plugin   
 
 So the devices will stream openconfig and EOS native data to Telegraf and Telegraf will store the data to Influxdb.  
 
@@ -83,6 +83,8 @@ bfe273b6b299        telegraf:1.14.3         "/entrypoint.sh tele…"   12 second
 c3ead2edcf5a        influxdb:1.8.0          "/entrypoint.sh infl…"   20 seconds ago      Up 18 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
 c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago         Up 4 hours          0.0.0.0:3000->3000/tcp                           grafana
 ```
+
+# Display detailed information on the network 
 ```
 docker network inspect tig
 [
@@ -182,6 +184,8 @@ ifcounters
 openconfig_bgp
 > 
 ```
+Query ifcounters measurement 
+
 ```
 > SHOW TAG KEYS FROM "ifcounters"
 name: ifcounters
@@ -622,6 +626,7 @@ time                derivative
 1591747500000000000 0.03333333333333333
 > 
 ```
+Query openconfig_bgp measurement 
 ```
 ```
 ```
