@@ -237,6 +237,8 @@ docker-compose version 1.25.5, build 8a1c60f6
 
 ## Run this command to create and start the containers 
 
+We can use this [docker-compose.yml](docker-compose.yml) file to create a TIG stack.  
+
 ```
 docker-compose -f docker-compose.yml up -d
 ```
