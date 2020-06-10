@@ -13,7 +13,7 @@
 [Configure Telegraf](#configure-telegraf)   
 [Install Docker](#install-docker)       
 [Pull the Docker images](#pull-the-docker-images)   
-[Docker workflow](#docker-workflow)
+[Docker workflow](#docker-workflow)   
 [Docker-compose workflow](#docker-compose-workflow)  
 [Verify Telegraf logs](#verify-telegraf-logs)   
 [Query influxDB using CLI](#query-influxdb-using-cli)   
@@ -127,6 +127,12 @@ influxdb            1.8.0               1bf862b66ac1        3 weeks ago         
 
 # Docker workflow
 
+We can use of one these differents workflows to build the TIG stack:
+- Docker-compose workflow
+- Docker workflow
+
+This section covers the Docker workflow. 
+
 ## Create a Docker network 
 
 ```
@@ -227,6 +233,12 @@ docker network inspect tig
 
 # Docker-compose workflow
 
+We can use of one these differents workflows to build the TIG stack:
+- Docker-compose workflow
+- Docker workflow
+
+This section covers the Docker-compose workflow. 
+
 ## Install Docker-compose
 
 ```
@@ -234,7 +246,7 @@ docker-compose -v
 docker-compose version 1.25.5, build 8a1c60f6
 ```
 
-Or, instead of running the above Docker commands, use docker-compose: 
+## Run this command to create and start the containers 
 
 ```
 docker-compose -f docker-compose.yml up -d
