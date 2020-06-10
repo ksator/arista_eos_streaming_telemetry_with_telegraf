@@ -444,6 +444,11 @@ ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.125
 
 ```
 > SHOW SERIES FROM "ifcounters" WHERE "source" = '10.83.28.122'
+```
+<details><summary>click me to see the response</summary>
+<p>
+  
+```
 key
 ---
 ifcounters,host=bfe273b6b299,name=Ethernet1,source=10.83.28.122
@@ -512,8 +517,16 @@ ifcounters,host=bfe273b6b299,name=Ethernet8,source=10.83.28.122
 ifcounters,host=bfe273b6b299,name=Ethernet9,source=10.83.28.122
 ifcounters,host=bfe273b6b299,name=Management1,source=10.83.28.122
 ```
+</p>
+</details>
+
 ```
 > SHOW SERIES EXACT CARDINALITY ON arista
+```
+<details><summary>click me to see the response</summary>
+<p>
+  
+```
 name: eos_bgp
 count
 -----
@@ -529,6 +542,9 @@ count
 -----
 22
 ```
+</p>
+</details>
+
 ```
 > SHOW SERIES EXACT CARDINALITY ON arista FROM "ifcounters" WHERE "source" = '10.83.28.122'
 name: ifcounters
@@ -539,6 +555,11 @@ count
 ```
 ```
 > SELECT * FROM "ifcounters" WHERE "source" = '10.83.28.122'  ORDER BY DESC LIMIT 3
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                host         in_broadcast_pkts in_discards in_errors in_multicast_pkts in_octets in_unicast_pkts name        out_broadcast_pkts out_discards out_errors out_multicast_pkts out_octets out_unicast_pkts source
 ----                ----         ----------------- ----------- --------- ----------------- --------- --------------- ----        ------------------ ------------ ---------- ------------------ ---------- ---------------- ------
@@ -547,6 +568,9 @@ time                host         in_broadcast_pkts in_discards in_errors in_mult
 1591747175792483320 bfe273b6b299                                                                                     Management1                                                                          5768915          10.83.28.122
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT "in_octets","out_octets", "name" FROM "ifcounters" WHERE "source" = '10.83.28.122' ORDER BY DESC LIMIT 3
 name: ifcounters
@@ -569,6 +593,11 @@ time                in_octets out_octets
 ```
 ```
 > SELECT "in_octets","out_octets" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name"='Ethernet24' AND time >= now() - 60s) 
+```
+<details><summary>click me to see the response</summary>
+<p>
+
+```
 name: ifcounters
 time                in_octets out_octets
 ----                --------- ----------
@@ -580,6 +609,9 @@ time                in_octets out_octets
 1591747345721389797           352575
 > 
 ```
+</p>
+</details>
+
 ```
 > SELECT "in_octets","out_octets","name" FROM "ifcounters" WHERE ("source" = '10.83.28.122' AND "name" =~/Ethernet.*/ AND time >= now() - 60s) 
 ```
