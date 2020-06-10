@@ -34,7 +34,8 @@ services:
    networks:
      - tig
    image: grafana/grafana:7.0.3
-   restart: always
+   volumes:
+      - $PWD/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
    depends_on:
      - influxdb
 
