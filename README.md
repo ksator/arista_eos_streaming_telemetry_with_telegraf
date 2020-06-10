@@ -26,7 +26,7 @@ It covers both OpenConfig telemetry and native telemetry.
   - Telegraf: It has a gNMI client. It subscribes to paths (OpenConfig and native) on targets (Arista EOS devices).
   - InfluxDB: Telegraf writes on InfluxDB the data streamed from network devices.    
 
-So the devices will stream OpenConfig and EOS native data to Telegraf. Telegraf will store the data to InfluxDB. Then we will query InfluxBD.  
+So the devices will stream OpenConfig and EOS native data to Telegraf. Telegraf will store the data to InfluxDB. Then we will query InfluxDB.  
 
 # Configure Arista devices 
 
@@ -41,18 +41,18 @@ ip access-list GNMI
 management api gnmi
   transport grpc def
     ip access-group GNMI
-   provider eos-native
+  provider eos-native
 ```
 
 `provider eos-native` is required to serve gNMI subscription requests to EOS native paths.  
-So, using the above configuration, a gNMI client can subscribes to both OpenConfig and native paths.  
+So, using the above configuration, a gNMI client can subscribes to both OpenConfig paths and native paths.  
 
 # Configure Telegraf
 
 We will use the Telegraf configuration file [telegraf.conf](telegraf.conf). 
 It uses: 
  - a gNMI input plugin configured to subscribe to OpenConfig and native paths 
- - the influxdb output plugin   
+ - the influxDB output plugin   
 
 So the devices will stream OpenConfig and EOS native data to Telegraf. And Telegraf will store the data to Influxdb.  
 
