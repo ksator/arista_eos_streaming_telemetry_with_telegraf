@@ -1052,16 +1052,16 @@ source 10.83.28.125
 ### Select fields 
 
 ```
-> SELECT "vrfBgpPeerInfoStatusEntryTable/default/bgpPeerInfoStatusEntry/10.10.10.4/bgpPeerEstablishedTime", "vrfBgpPeerInfoStatusEntryTable/default/bgpPeerInfoStatusEntry/10.10.10.4/bgpPeerEstablishedTransitions" FROM "eos_bgp" WHERE source='10.83.28.122' ORDER BY DESC LIMIT 3
+> SELECT "vrfBgpPeerInfoStatusEntryTable/default/bgpPeerInfoStatusEntry/10.10.10.4/bgpPeerEstablishedTime" AS "bgpPeerEstablishedTime", "vrfBgpPeerInfoStatusEntryTable/default/bgpPeerInfoStatusEntry/10.10.10.4/bgpPeerEstablishedTransitions" AS "bgpPeerEstablishedTransitions" FROM "eos_bgp" WHERE source='10.83.28.122' ORDER BY DESC LIMIT 3
 ```
 <details><summary>click me to see the response</summary>
 <p>
 
 ```
 name: eos_bgp
-time                vrfBgpPeerInfoStatusEntryTable/default/bgpPeerInfoStatusEntry/10.10.10.4/bgpPeerEstablishedTime vrfBgpPeerInfoStatusEntryTable/default/bgpPeerInfoStatusEntry/10.10.10.4/bgpPeerEstablishedTransitions
-----                ----------------------------------------------------------------------------------------------- ------------------------------------------------------------------------------------------------------
-1591729945506543003 1591716173.220017                                                                               2
+time                bgpPeerEstablishedTime bgpPeerEstablishedTransitions
+----                ---------------------- -----------------------------
+1591729945506543003 1591716173.220016      2
 > 
 ```
 </p>
