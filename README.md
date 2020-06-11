@@ -1346,6 +1346,8 @@ ResultSet({'('measurements', None)': [{'name': 'eos_bgp'}, {'name': 'ifcounters'
 You can now use the Grafana GUI http://localhost:3000   
 The default username and password are admin/admin, but we changed them to arista/arista    
 The datasource is already configured. It uses InfluxDB.   
-There is no dashboard. You can create your own dashboards.  
+There is no dashboard configured. You can create your own dashboards.  
+![Grafana.png](Grafana.png)   
+
 
    
