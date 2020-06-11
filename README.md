@@ -6,19 +6,14 @@
 [About Telegraf](#about-telegraf)  
 [About InfluxDB](#about-influxdb)  
 [About Grafana](#about-grafana)  
-[About a TIG stack](#about-a-TIG-stack)  
 [Demo building blocks](#demo-building-blocks)   
-[Configure Arista devices](#configure-arista-devices)   
-[Configure Telegraf](#configure-telegraf)   
-[Install Docker](#install-docker)       
-[Pull the Docker images](#pull-the-docker-images)   
-[Workflow to build the TIG stack](#workflow-to-build-the-tig-stack)   
-[Docker workflow](#docker-workflow)   
-[Docker-compose workflow](#docker-compose-workflow)  
+[Arista devices configuration](#arista-devices-configuration)   
+[Telegraf configuration file](#telegraf-configuration-file)   
+[Build the TIG stack](#build-the-tig-stack)   
 [Verify Telegraf logs](#verify-telegraf-logs)   
-[Query influxDB using CLI](#query-influxdb-using-cli)   
-[Query InfluxDB using Python](#query-influxdb-using-python)   
-[Use Grafana](#use-grafana)  
+[InfluxDB query examples using CLI](#influxdb-query-examples-using-cli)   
+[InfluxDB query examples using Python](#influxdb-query-examples-using-python)   
+[Grafana GUI](#grafana-gui)  
 
 # About this repository  
 
@@ -42,13 +37,6 @@ It supports InfluxDB and other backends.
 It runs as a web application.  
 It is written in GO.  
 
-# About a TIG stack 
-
-A TIG stack uses:
-- Telegraf to collect data and to write the collected data in InfluxDB. 
-- InfluxDB to store the data collected. 
-- Grafana to visualize the data stored in InfluxDB. 
-
 # Demo building blocks 
 
   - EOS devices: There is a gNMI server in EOS devices.    
@@ -57,7 +45,7 @@ A TIG stack uses:
 
 So the devices will stream OpenConfig and EOS native data to Telegraf. Telegraf will store the data to InfluxDB. Then we will query InfluxDB.  
 
-# Configure Arista devices 
+# Arista devices configuration
 
 Enable and allow gNMI:
 
@@ -76,9 +64,9 @@ management api gnmi
 `provider eos-native` is required to serve gNMI subscription requests to EOS native paths.  
 So, using the above configuration, a gNMI client can subscribes to both OpenConfig paths and native paths.  
 
-# Configure Telegraf
+# Telegraf configuration file
 
-We will use the Telegraf configuration file [telegraf.conf](telegraf.conf). 
+Here's a Telegraf configuration file example [telegraf.conf](telegraf.conf). 
 It uses: 
  - a gNMI input plugin configured to subscribe to OpenConfig and native paths 
  - the influxDB output plugin   
@@ -88,14 +76,28 @@ So the devices will stream OpenConfig and EOS native data to Telegraf. And Teleg
 Note: To subscribe to both OpenConfig and native paths, the gNMI client must send 2 differents subscription requests.  
 So, in this demo, the gNMI input plugin is configured with 2 differents subscription requests: one to subscribe to a set of OpenConfig paths and another one to subscribe to a set of native paths.  
 
-# Install Docker
+
+# Build the TIG stack
+
+A TIG stack uses:
+- Telegraf to collect data and to write the collected data in InfluxDB. 
+- InfluxDB to store the data collected. 
+- Grafana to visualize the data stored in InfluxDB. 
+
+We can use of one these differents workflows to build the TIG stack:
+- Docker-compose workflow
+- Docker workflow
+
+## Docker workflow
+
+### Install Docker
 
 ```
 docker -v
 Docker version 19.03.8, build afacb8b
 ```
 
-# Pull the Docker images
+### Pull the Docker images
 
 This is optionnal as they will be pulled automatically if necessary.  
 
@@ -104,6 +106,8 @@ docker pull telegraf:1.14.3
 docker pull influxdb:1.8.0
 docker pull grafana/grafana:7.0.3
 ```
+
+### List Docker images
 
 ```
 docker images
@@ -120,31 +124,29 @@ influxdb            1.8.0               1bf862b66ac1        3 weeks ago         
 </p>
 </details>
 
-# Workflow to build the TIG stack
 
-We can use of one these differents workflows to build the TIG stack:
-- Docker-compose workflow
-- Docker workflow
-
-# Docker workflow
-
-## Create a Docker network 
+### Create a Docker network 
 
 ```
 docker network create tig
 ```
+
+### List Docker networks 
+
 ```
 docker network ls
 ```
 
-## Create Docker containers 
-
+### Create Docker containers 
 
 ```
 docker run -d --name influxdb -p 8083:8083 -p 8086:8086 --network=tig influxdb:1.8.0
 docker run -d --name telegraf -v $PWD/telegraf.conf:/etc/telegraf/telegraf.conf:ro --network=tig telegraf:1.14.3
 docker run -d --name grafana -p 3000:3000 --network=tig grafana/grafana:7.0.3
 ```
+
+### List Docker running containers 
+
 ```
 docker ps
 ```
@@ -161,7 +163,7 @@ c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago
 </details>
 
 
-## Display detailed information about the network 
+### Display detailed information about the Docker network 
 
 ```
 docker network inspect tig
@@ -226,22 +228,60 @@ docker network inspect tig
 </p>
 </details>
 
-# Docker-compose workflow
 
-## Install Docker-compose
+## Docker-compose workflow
+
+### Install Docker
+
+```
+docker -v
+Docker version 19.03.8, build afacb8b
+```
+
+### Install Docker-compose
 
 ```
 docker-compose -v
 docker-compose version 1.25.5, build 8a1c60f6
 ```
 
-## Run this command to create and start the containers 
+### Pull the Docker images
+
+This is optionnal as they will be pulled automatically if necessary.  
+
+```
+docker pull telegraf:1.14.3
+docker pull influxdb:1.8.0
+docker pull grafana/grafana:7.0.3
+```
+
+### List Docker images
+
+```
+docker images
+```
+<details><summary>click me to see the response</summary>
+<p>
+  
+```
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+grafana/grafana     7.0.3               22fccd4fab0a        6 days ago          158MB
+telegraf            1.14.3              6fdd3e021713        2 weeks ago         251MB
+influxdb            1.8.0               1bf862b66ac1        3 weeks ago         304MB
+```
+</p>
+</details>
+
+### Create and start the containers 
 
 We can use this [docker-compose.yml](docker-compose.yml) file to create a TIG stack.  
 
 ```
 docker-compose -f docker-compose.yml up -d
 ```
+
+### List Docker running containers 
+
 ```
 docker-compose ps
 ```
@@ -254,6 +294,21 @@ docker-compose ps
 grafana    /run.sh                   Up      0.0.0.0:3000->3000/tcp      
 influxdb   /entrypoint.sh influxd    Up      8083/tcp, 8086/tcp          
 telegraf   /entrypoint.sh telegraf   Up      8092/udp, 8094/tcp, 8125/udp
+```
+</p>
+</details>
+
+```
+docker ps
+```
+<details><summary>click me to see the response</summary>
+<p>
+  
+```
+CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                            NAMES
+bfe273b6b299        telegraf:1.14.3         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
+c3ead2edcf5a        influxdb:1.8.0          "/entrypoint.sh infl…"   20 seconds ago      Up 18 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
+c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago         Up 4 hours          0.0.0.0:3000->3000/tcp                           grafana
 ```
 </p>
 </details>
@@ -279,7 +334,7 @@ docker logs telegraf
 </p>
 </details>
 
-# Query influxDB using CLI
+# InfluxDB query examples using CLI
 
 ## Start an interactive session
 
@@ -1242,15 +1297,16 @@ time                bgpPeerEstablishedTime bgpPeerEstablishedTransitions
 </p>
 </details>
 
-# Query InfluxDB using Python
+# InfluxDB query examples using Python
 
 ## Requirements 
+
 ```
 python -V
 Python 3.7.7
 ```
 ```
-pip install influxdb
+pip install -r requirements.txt
 ```
 ```
 pip freeze | grep influxdb
@@ -1285,7 +1341,7 @@ ResultSet({'('measurements', None)': [{'name': 'eos_bgp'}, {'name': 'ifcounters'
 >>> exit()
 ```
 
-# Use Grafana
+# Grafana GUI
 
 You can now use the Grafana GUI http://localhost:3000   
 The default username and password are admin/admin, but we changed them to arista/arista    
