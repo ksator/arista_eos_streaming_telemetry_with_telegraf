@@ -1,4 +1,4 @@
-![GitHub](https://img.shields.io/github/license/ksator/arista_eos_streaming_telemetry_with_telegraf)    
+![GitHub](https://img.shields.io/github/license/ksator/arista_eos_streaming_telemetry_with_gnmi_and_telegraf)    
 
 # Tables of content 
 
