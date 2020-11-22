@@ -7,20 +7,22 @@ networks:
 services:
  influxdb:
    container_name: influxdb
-   expose:
-     - 8086
-     - 8083
+   ports:
+     - 8086:8086
+     - 8083:8083
    networks:
      - tig
    image: influxdb:1.8.0
  
  telegraf:
    container_name: telegraf
-   image: telegraf:1.14.3
+   image: telegraf:1.16.2
    networks:
      - tig
    volumes:
      - $PWD/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+     - $PWD/telegraf.d:/etc/telegraf/telegraf.d
+   command: ["telegraf", "--config-directory", "/etc/telegraf/telegraf.d"]
    depends_on:
      - influxdb
  
