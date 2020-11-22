@@ -1,5 +1,3 @@
-![GitHub](https://img.shields.io/github/license/ksator/arista_eos_streaming_telemetry_with_gnmi_and_telegraf)    
-
 # Tables of content 
 
 [About this repository](#about-this-repository)   
@@ -102,7 +100,7 @@ Docker version 19.03.8, build afacb8b
 This is optionnal as they will be pulled automatically if necessary.  
 
 ```
-docker pull telegraf:1.14.3
+docker pull telegraf:1.16.2
 docker pull influxdb:1.8.0
 docker pull grafana/grafana:7.0.3
 ```
@@ -118,7 +116,7 @@ docker images
 ```
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 grafana/grafana     7.0.3               22fccd4fab0a        6 days ago          158MB
-telegraf            1.14.3              6fdd3e021713        2 weeks ago         251MB
+telegraf            1.16.2              8a2da2d9fedd        2 weeks ago         251MB
 influxdb            1.8.0               1bf862b66ac1        3 weeks ago         304MB
 ```
 </p>
@@ -141,7 +139,7 @@ docker network ls
 
 ```
 docker run -d --name influxdb -p 8083:8083 -p 8086:8086 --network=tig influxdb:1.8.0
-docker run -d --name telegraf -v $PWD/telegraf.conf:/etc/telegraf/telegraf.conf:ro --network=tig telegraf:1.14.3
+docker run -d --name telegraf -v $PWD/telegraf.conf:/etc/telegraf/telegraf.conf:ro --network=tig telegraf:1.16.2
 docker run -d --name grafana -p 3000:3000 --network=tig grafana/grafana:7.0.3
 ```
 
@@ -155,7 +153,7 @@ docker ps
   
 ```
 CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                            NAMES
-bfe273b6b299        telegraf:1.14.3         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
+bfe273b6b299        telegraf:1.16.2         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
 c3ead2edcf5a        influxdb:1.8.0          "/entrypoint.sh infl…"   20 seconds ago      Up 18 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
 c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago         Up 4 hours          0.0.0.0:3000->3000/tcp                           grafana
 ```
@@ -250,7 +248,7 @@ docker-compose version 1.25.5, build 8a1c60f6
 This is optionnal as they will be pulled automatically if necessary.  
 
 ```
-docker pull telegraf:1.14.3
+docker pull telegraf:1.16.2
 docker pull influxdb:1.8.0
 docker pull grafana/grafana:7.0.3
 ```
@@ -266,7 +264,7 @@ docker images
 ```
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 grafana/grafana     7.0.3               22fccd4fab0a        6 days ago          158MB
-telegraf            1.14.3              6fdd3e021713        2 weeks ago         251MB
+telegraf            1.16.2              8a2da2d9fedd        2 weeks ago         251MB
 influxdb            1.8.0               1bf862b66ac1        3 weeks ago         304MB
 ```
 </p>
@@ -289,11 +287,11 @@ docker-compose ps
 <p>
   
 ```
-  Name             Command           State              Ports            
--------------------------------------------------------------------------
-grafana    /run.sh                   Up      0.0.0.0:3000->3000/tcp      
-influxdb   /entrypoint.sh influxd    Up      8083/tcp, 8086/tcp          
-telegraf   /entrypoint.sh telegraf   Up      8092/udp, 8094/tcp, 8125/udp
+  Name                Command               State                       Ports                     
+--------------------------------------------------------------------------------------------------
+grafana    /run.sh                          Up      0.0.0.0:3000->3000/tcp                        
+influxdb   /entrypoint.sh influxd           Up      0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp
+telegraf   /entrypoint.sh telegraf -- ...   Up      8092/udp, 8094/tcp, 8125/udp    
 ```
 </p>
 </details>
@@ -306,7 +304,7 @@ docker ps
   
 ```
 CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                                            NAMES
-bfe273b6b299        telegraf:1.14.3         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
+bfe273b6b299        telegraf:1.16.2         "/entrypoint.sh tele…"   12 seconds ago      Up 11 seconds       8092/udp, 8125/udp, 8094/tcp                     telegraf
 c3ead2edcf5a        influxdb:1.8.0          "/entrypoint.sh infl…"   20 seconds ago      Up 18 seconds       0.0.0.0:8083->8083/tcp, 0.0.0.0:8086->8086/tcp   influxdb
 c818fb9ce85f        grafana/grafana:7.0.3   "/run.sh"                4 hours ago         Up 4 hours          0.0.0.0:3000->3000/tcp                           grafana
 ```
@@ -322,9 +320,9 @@ docker logs telegraf
 <p>
 
 ```
-2020-06-09T23:46:34Z I! Starting Telegraf 1.14.3
+2020-06-09T23:46:34Z I! Starting Telegraf 1.16.2
 2020-06-09T23:46:34Z I! Using config file: /etc/telegraf/telegraf.conf
-2020-06-09T23:46:34Z I! Loaded inputs: cisco_telemetry_gnmi cisco_telemetry_gnmi
+2020-06-09T23:46:34Z I! Loaded inputs: gnmi gnmi
 2020-06-09T23:46:34Z I! Loaded aggregators: 
 2020-06-09T23:46:34Z I! Loaded processors: 
 2020-06-09T23:46:34Z I! Loaded outputs: influxdb
