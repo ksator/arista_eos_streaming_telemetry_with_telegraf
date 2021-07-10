@@ -51,11 +51,9 @@ Enable and allow gNMI:
 enable
 configure
 username arista secret 0 arista
-ip access-list GNMI
-  10 permit tcp any any eq gnmi
 management api gnmi
   transport grpc def
-    ip access-group GNMI
+    vrf MGMT
   provider eos-native
 ```
 
